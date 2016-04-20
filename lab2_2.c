@@ -27,13 +27,16 @@ void eval(char *cmdline)
 	
 	if (!builtin_command(argv)) {
 		if ((pid = fork()) == 0) { /* Child runs user job */
-			if (execve(argv[0], argv, environ) < 0) {
+			if (execve(argv[0], argv, environ))
+			{
+			}
+			if (execvp(argv[0], argv) < 0) {
 				printf("%s: Command not found.\n", argv[0]);
 				exit(0);
 			}	
 		}
 		
-			 /* Parent waits for foreground job to terminate */
+		/* Parent waits for foreground job to terminate */
 		if (!bg) {
 			int status;
 			if (waitpid(pid, &status, 0) < 0)
@@ -96,7 +99,7 @@ int main()
 
 	 while (1) {
 		  /* Read */
-		printf("prompt> ");
+		printf("> ");
 		fgets(cmdline, MAXLINE, stdin);
 		if (feof(stdin))
 			exit(0);
